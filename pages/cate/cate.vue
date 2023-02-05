@@ -1,5 +1,6 @@
 <template>
   <view>
+    <view class="search-box"><my-search @myclick="gotoSearch"></my-search></view>
     <view class="scroll-view-container">
       <!-- 左侧的滚动视图区域 -->
       <scroll-view class="left-scroll-view" scroll-y :style="{ height: wh + 'px' }">
@@ -9,7 +10,6 @@
           </view>
         </block>
       </scroll-view>
-      <!-- 右侧的滚动视图区域 -->
       <!-- 右侧的滚动视图区域 -->
       <scroll-view class="right-scroll-view" scroll-y :style="{ height: wh + 'px' }" :scroll-top="scrollTop">
         <view class="cate-lv2" v-for="(item2, i2) in cateLevel2" :key="i2">
@@ -39,17 +39,17 @@ export default {
       // 分类数据列表
       cateList: [],
       //默认选中
-      active: 2,
+      active: 0,
       // 二级分类列表
       cateLevel2: [],
       // 滚动条距离顶部的距离
       scrollTop: 0
     }
   },
+
   methods: {
     async getCateList() {
       const res = await uni.$gets('/categories')
-      console.log(res)
       this.cateList = res.message
       // 为二级分类赋值
       this.cateLevel2 = res.message[0].children
@@ -63,18 +63,32 @@ export default {
       uni.navigateTo({
         url: '/subpkg/goods_list/goods_list?cid=' + item.cat_id
       })
+    },
+    // 点击跳转页面
+    gotoSearch() {
+      uni.navigateTo({
+        url: '/subpkg/search/search'
+      })
     }
   },
   onLoad() {
     // 获取当前的信息
     const sysInfo = uni.getSystemInfoSync()
-    this.wh = sysInfo.windowHeight
+    this.wh = sysInfo.windowHeight - 50
     this.getCateList()
   }
 }
 </script>
 
 <style lang="scss" scoped>
+.search-box {
+  // 设置定位效果为“吸顶”
+  position: sticky;
+  // 吸顶的“位置”
+  top: 0;
+  // 提高层级，防止被轮播图覆盖
+  z-index: 999;
+}
 .scroll-view-container {
   display: flex;
 
